@@ -1,0 +1,155 @@
+
+preto = True
+vermelho = False
+
+class Tree:
+    ##inicialização da minha raiza da arvor
+    def __init__(self):
+        self.raiz = None
+
+    ##definindo o meu def , para ele receba string. e sua definição da raiz
+    def __str__(self):
+        return self.printTree(self.raiz)
+
+    ##definindo como uma string o meu nó da esquerda e o meu nó da direita
+    def printTree(self, node):
+        str = ''
+        if node.esquerda is not None:
+            str += self.printTree(node.esquerda)
+        str += node.__str__() + '\n'
+
+        if node.direita is not None:
+            str += self.printTree(node.direita)
+        return str
+
+    def insert(self,item, chave, node=None):
+        #se minha arvore estiver vazia
+        if node is None:
+            node = self.raiz
+        #se a minha arvore não estiver vazia
+        if node is None:
+            #crio um novo nó
+            if node.esquerda is None and node.direita is None:
+                NovoNode = RubroNegra(item, chave, parente=node)
+
+            ##Se o filho vai ser da direta ou esquerda
+            if chave >= node.key:
+                node.direita = NovoNode
+            else:
+                node.esquerda = NovoNode
+
+            self.corrigir(NovoNode)
+            return True
+        #Se tiver um filho da direta ele ira comprara o nó.
+        if node.direita != None:
+
+            if chave >= node.chave:
+                self.insert(item, chave, node.direita)
+        #se tiver filho na esquerda, ele ira comparar o nó
+        if node.esquerda != None:
+            if chave >= node.chave:
+                self.insert(item, chave, node.esquerda)
+        #caso a arvore esteja vazia
+        else:
+            #cria-se um novo nó da qual seja ligado a raiz
+            NovoNode = RubroNegra(item, chave, parente=None)
+
+            self.raiz = NovoNode
+            self.corrigir(NovoNode)
+            return True
+
+        def corrigir(self, node):
+            #caso1
+            if node.parente is None:
+                node.cor = preto
+            #caso2
+
+            else:
+                avo = node.avo()
+                tio = node.tio()
+                pai = node.parente()
+
+                if tio != None and tio.cor == vermelho:
+                    pai.cor = preto
+                    avo.cor = vermelho
+                    tio.cor = preto
+
+                    self.corrigir(avo)
+                #caso3
+                else:
+                    #condição  1
+                    # caso o nó inserido seja filho esquerdo e o pai também seja o filho esquerdo, logo
+                    if avo is not None:
+                        if avo.esquerda == pai and node == pai.esquerdo:
+
+                            #como é uma arvore rubro negra, o avo deve ser vermelho e o pai deve ser preto
+                            if avo.cor == preto and pai.cor == vermelho:
+                                #recolorir o pai e o avo
+                                pai.reColorir()
+                                avo.reColorir()
+
+                                ##Iniciar a rotação da direita
+                                if avo.parente is not None:
+                                    if avo.parente.esquerda == avo:
+                                        avo.parente.esquerda = pai.rotacaoDireita()
+
+                                    else:
+                                        avo.parente.direita = pai.rotacaoDireita()
+                                else:
+                                    self.raiz = pai.rotacaoEsquerda()
+
+                    #condição 2
+                        #caso o n[o seja inserido, seja o filho da direita e o pai da direita
+                        elif avo.direita == pai and node == pai.direita:
+                            #recolorir o pai e avo
+                            if avo.cor == preto and pai.cor == vermelho:
+                                pai.reColorir()
+                                avo.reColorir()
+
+                                if avo.parente is not None:
+                                    if avo.parente.esquerda == avo:
+                                        avo.parente.esquerda = pai.rotacaoEsquerda()
+                                    else:
+                                        avo.parente.direita = pai.rotacaoEsquerda()
+                                else:
+                                    self.raiz = pai.rotacaoEsquerda()
+
+                        #condição 3
+
+                        # caso o nó inserido seja o filho direito  e o pai seja esquerdo
+
+                        elif avo.direita == pai and node == pai.esquerdo:
+                            if avo.cor == preto and pai.cor == vermelho:
+
+                                pai.reColorir()
+                                avo.reColorir()
+
+                                #realiza uma rotação.
+                                avo.direita = node.rotacaoDireita()
+
+                                if avo.parente is not None:
+                                    if avo.parente.esquerda == avo:
+                                        avo.parente.esquerda = pai.rotacaoEsquerda()
+                                    else:
+                                        avo.parente.direita = pai.rotacaoEsquerda()
+                                else:
+                                    self.raiz = pai.rotacaoEsquerda()
+                        #condição 4
+                        #caso o nó inseriod seja esquerdo e o pai seja direito
+                        elif avo.esquerda == pai and node == pai.direita:
+
+                            #caso a cor do avo for preto e do pai ser vemelho
+                            if avo.cor == preto and pai.cor == vermelho:
+                                pai.reColorir()
+                                avo.reColorir()
+
+                                avo.esquerda = node.rotacaoEsquerda()
+
+                                if avo.parente is not None:
+                                    if avo.parente.esquerda == avo:
+                                        avo.parente.esquerda = pai.rotacaoDireita()
+                                    else:
+                                        avo.parente.direita = pai.rotacaoDireita()
+                                else:
+                                    self.raiz = pai.rotacaoDireita()
+                self.corrigir(pai)
